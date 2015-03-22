@@ -210,7 +210,7 @@ static int netdev_send(struct vport *vport, struct sk_buff *skb)
 	count++;
 	if(skb->preemptive)
 		prcount++;
-	if(count % 1000000 == 0) {
+	if(count % 100000 == 0) {
 		pr_info("netdev sent %lld packets with %lld preempted.",
 				count, prcount);
 		if(unlikely(count >= 2147000000)) {

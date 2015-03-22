@@ -2269,7 +2269,11 @@ static int __init dp_init(void)
 
 	BUILD_BUG_ON(sizeof(struct ovs_skb_cb) > FIELD_SIZEOF(struct sk_buff, cb));
 
-	pr_info("Open vSwitch switching datapath\n");
+#ifdef PREEMPTIVE_ACTION
+	pr_info("Open vSwitch switching datapath (preemptive)\n");
+#else
+	pr_info("Open vSwitch switching datapath (nonpreemptive)\n");
+#endif
 
 	err = action_fifos_init();
 	if (err)
