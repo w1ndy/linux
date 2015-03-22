@@ -610,7 +610,9 @@ struct sk_buff {
 	__u8			inner_protocol_type:1;
 	__u8			remcsum_offload:1;
 	/* 3 or 5 bit hole */
-
+	
+	__u8			preemptive:1;	/* Preemptive: prepend to tx queue */
+	
 #ifdef CONFIG_NET_SCHED
 	__u16			tc_index;	/* traffic control index */
 #ifdef CONFIG_NET_CLS_ACT

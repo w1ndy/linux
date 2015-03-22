@@ -197,12 +197,26 @@ static int netdev_send(struct vport *vport, struct sk_buff *skb)
 	struct netdev_vport *netdev_vport = netdev_vport_priv(vport);
 	int mtu = netdev_vport->dev->mtu;
 	int len;
+	static long long int count = 0, prcount = 0;
 
 	if (unlikely(packet_length(skb) > mtu && !skb_is_gso(skb))) {
 		net_warn_ratelimited("%s: dropped over-mtu packet: %d > %d\n",
 				     netdev_vport->dev->name,
 				     packet_length(skb), mtu);
 		goto drop;
+	}
+
+	// Do some statistics. These code can be easily triggered by iperf.
+	count++;
+	if(skb->preemptive)
+		prcount++;
+	if(count % 1000000 == 0) {
+		pr_info("netdev sent %lld packets with %lld preempted.",
+				count, prcount);
+		if(unlikely(count >= 2147000000)) {
+			count = 0;
+			prcount = 0;
+		}
 	}
 
 	skb->dev = netdev_vport->dev;

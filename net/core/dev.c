@@ -2817,7 +2817,14 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 
 		rc = NET_XMIT_SUCCESS;
 	} else {
-		rc = q->enqueue(skb, q) & NET_XMIT_MASK;
+		if(skb->preemptive) {
+			__skb_queue_head(&q->q, skb);
+			qdisc_qstats_backlog_inc(q, skb);
+			rc = NET_XMIT_SUCCESS;
+		} else {
+			rc = q->enqueue(skb, q) & NET_XMIT_MASK;
+		}
+
 		if (qdisc_run_begin(q)) {
 			if (unlikely(contended)) {
 				spin_unlock(&q->busylock);

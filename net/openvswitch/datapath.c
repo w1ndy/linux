@@ -588,6 +588,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
 	OVS_CB(packet)->input_vport = input_vport;
 	sf_acts = rcu_dereference(flow->sf_acts);
 
+#ifdef PREEMPTIVE_ACTION
+#warning "Preemptive ovs actions enabled."
+	packet->preemptive = 1;
+#else
+#warning "Preemptive ovs actions disabled."
+	packet->preemptive = 0;
+#endif
+
 	local_bh_disable();
 	err = ovs_execute_actions(dp, packet, sf_acts, &flow->key);
 	local_bh_enable();
